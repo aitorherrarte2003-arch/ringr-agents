@@ -42,6 +42,10 @@ python -m venv .venv
 pip install -e ".[dev]"
 ```
 
+En PowerShell, si `activate` da un error de "ejecución de scripts deshabilitada", no hace falta
+activar nada: basta con anteponer `.venv\Scripts\python -m` a cada orden (por ejemplo,
+`.venv\Scripts\python -m pytest`).
+
 ### Pruébalo en 1 minuto
 
 Tal y como lo describe el enunciado: un `ConversationModel` y un `ParserModel` genéricos que
@@ -112,10 +116,11 @@ https://api.ringr.assistance/v1/request · Darme de baja
 ```
 
 Vale cualquier objeto con `answer_user()` y `parse_data()`, sin heredar de nada. Para ver todas
-las peticiones de una conversación, pásale tu propio cliente:
-`DebtAgent(..., http_client=SimulatedHttpClient())` y luego `client.sent_requests`. Este ejemplo
-se ejecuta en los tests (`tests/test_statement.py`, que recorre el enunciado punto por punto),
-así que no puede quedarse desfasado.
+las peticiones de una conversación, pásale tu propio cliente (`client = SimulatedHttpClient()`,
+de `ringr_agents.http_client`, y `DebtAgent(..., http_client=client)`); después,
+`client.sent_requests` las lista en orden. Los ejemplos de arriba se ejecutan en los tests
+(`tests/test_statement.py`, que recorre el enunciado punto por punto), así que no pueden quedarse
+desfasados.
 
 ### Comandos
 
@@ -125,7 +130,7 @@ así que no puede quedarse desfasado.
 | `pytest --cov` | Tests + cobertura |
 | `mypy` | Comprobación de tipos en modo estricto |
 | `ruff check .` y `ruff format --check .` | Lint y formato |
-| `python -m ringr_agents chat --agent debt` | Hablar con el agente usando Claude (necesita `ANTHROPIC_API_KEY`) |
+| `python -m ringr_agents chat --agent debt` | Hablar con el agente usando Claude Sonnet 5.5 (necesita `ANTHROPIC_API_KEY`; `--model` para usar otro) |
 | `python -m ringr_agents eval --agent debt` | Medir el extractor con el dataset `evals/debt.json` (necesita `ANTHROPIC_API_KEY`) |
 | `docker build -t ringr-agents .` y luego `docker run --rm ringr-agents` | La demo dentro de un contenedor |
 
@@ -443,6 +448,9 @@ funcionando igual.
 ### 6.1 LLM real con Claude (`llm/`)
 
 `ClaudeConversationModel` y `ClaudeParserModel` cumplen los mismos contratos que los simulados.
+Los dos agentes están probados en conversaciones reales con **Claude Sonnet 5.5**, el modelo por
+defecto: entiende bien la conversación y tiene menos latencia y coste que Opus, y en una llamada
+de voz la latencia importa.
 Su estado interno es el cliente de Anthropic, las instrucciones, el esquema y la conversación,
 la misma que el agente va rellenando:
 
@@ -532,7 +540,7 @@ class CallbackData:
 
 ```python
 class CallbackAgent(BaseAgent[CallbackData]):
-    action = HttpAction(name="callback.schedule", url="https://api.ringr.example/v1/callback")
+    action = HttpAction(name="callback.schedule", url="https://api.example.test/v1/callback")
 
     def validate_data(self, raw):
         return CallbackData(

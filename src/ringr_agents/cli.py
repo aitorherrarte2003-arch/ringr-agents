@@ -129,7 +129,7 @@ def _build_parser() -> argparse.ArgumentParser:
     for name, help_text in (("chat", "conversa con un agente real"), ("eval", "evalúa el parser")):
         command = commands.add_parser(name, help=help_text)
         command.add_argument("--agent", choices=sorted(AGENTS), required=True)
-        command.add_argument("--model", default="claude-opus-5-5")
+        command.add_argument("--model", default="claude-sonnet-5-5")
         if name == "eval":
             command.add_argument("--dataset", type=Path, help="por defecto evals/<agent>.json")
     return parser

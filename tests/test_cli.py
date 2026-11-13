@@ -75,7 +75,7 @@ def test_chat_conversation(capsys: pytest.CaptureFixture[str]) -> None:
 
     output = capsys.readouterr().out
     assert code == 0
-    assert "Chat con DebtAgent (claude-opus-5-5)" in output
+    assert "Chat con DebtAgent (claude-sonnet-5-5)" in output
     assert "Acción  : not_ready" in output
     assert "Acción  : executed" in output
     assert "POST    : https://api.ringr.debt/v1/commitment" in output

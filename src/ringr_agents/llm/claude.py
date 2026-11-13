@@ -33,7 +33,8 @@ from anthropic.types.beta import BetaMessage, BetaMessageParam
 from ringr_agents.conversation import Conversation, Message, Role
 from ringr_agents.models import ModelResponseError, ModelUnavailableError
 
-DEFAULT_MODEL = "claude-opus-5-5"
+# Sonnet: buena comprensión con menos latencia y coste que Opus (en voz, la latencia importa).
+DEFAULT_MODEL = "claude-sonnet-5-5"
 _FALLBACK_BETA = "server-side-fallback-2026-07-01"
 # Tope de tokens de la respuesta (incluye el razonamiento interno del modelo).
 # Es un límite, no un gasto: el modelo usa solo lo que necesita.
