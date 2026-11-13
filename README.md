@@ -141,6 +141,81 @@ Configuración por variables de entorno:
 | `RINGR_API_TOKEN` | Bearer token de las integraciones | `ringr_test_token_9f3a2c1d` (el del enunciado) |
 | `ANTHROPIC_API_KEY` | Solo para `chat` y `eval` | — |
 
+### Qué se puede probar sin API key y qué necesita una
+
+**Sin API key se prueba todo lo que pide el enunciado**, que pide expresamente simular los
+modelos y no llamar a LLMs reales: los tests (`pytest`), la demo (`python -m ringr_agents demo`)
+y el uso a mano con `ConversationModel` y `ParserModel` ([Pruébalo en 1 minuto](#pruébalo-en-1-minuto)).
+
+**Con una API key de Anthropic** (opcional), además se puede **hablar con los agentes**: tú
+escribes como si fueras el cliente, Claude responde y extrae los datos, y en cuanto se cumplen
+las condiciones se ve la petición que se enviaría.
+
+1. Crea una clave en https://console.anthropic.com/settings/keys (la cuenta necesita saldo).
+2. Ponla en la terminal. Solo dura mientras la terminal esté abierta; **nunca se escribe en el
+   código ni en ningún fichero del proyecto**:
+
+   | Terminal | Orden |
+   |---|---|
+   | PowerShell | `$env:ANTHROPIC_API_KEY = "sk-ant-..."` |
+   | cmd | `set ANTHROPIC_API_KEY=sk-ant-...` |
+   | Linux / macOS | `export ANTHROPIC_API_KEY=sk-ant-...` |
+
+3. Habla con cada agente. Escribe `salir` para terminar:
+
+   ```bash
+   python -m ringr_agents chat --agent debt
+   python -m ringr_agents chat --agent assistance
+   ```
+
+4. Si quieres, mide cuánto acierta el extractor con las conversaciones etiquetadas de `evals/`:
+
+   ```bash
+   python -m ringr_agents eval --agent debt
+   python -m ringr_agents eval --agent assistance
+   ```
+
+Usa Claude Sonnet 5.5 por defecto (`--model` para usar otro). Si falta la clave, el programa lo
+avisa antes de llamar a la API. Así fue una conversación real con el agente de cobros (en los
+dos últimos turnos se omiten algunas líneas de la salida):
+
+```text
+Tú: hola quien es ?
+  Agente  : Hola, buenas. Le llamo de Ringr, soy el agente de cobros. Le llamo por un recibo que
+            tenemos pendiente de pago. ¿Hablo con el titular de la cuenta?
+  Datos   : DebtCommitment(commitment_date=None, committed_amount=None)
+  Acción  : not_ready
+
+Tú: Sí, soy yo. Puedo pagar el viernes
+  Agente  : Perfecto, gracias. Entonces el viernes. ¿Qué importe podría abonar ese día?
+  Datos   : DebtCommitment(commitment_date='2026-11-20', committed_amount=None)
+  Acción  : not_ready
+
+Tú: 150
+  Agente  : Perfecto. Entonces quedamos en que el viernes abonará 150 euros. ¿Es correcto?
+  Datos   : DebtCommitment(commitment_date='2026-11-20', committed_amount=150.0)
+  Acción  : executed
+  POST    : https://api.ringr.debt/v1/commitment
+  Headers : {'commitment_date': '2026-11-20', 'committed_amount': '150.0', 'Content-Type': 'application/json',
+             'Idempotency-Key': '7d2d340e…', 'Authorization': '***'}
+  Body    : {"commitment_date": "2026-11-20", "committed_amount": 150.0}
+
+Tú: ¿Seguro que lo has apuntado?
+  Agente  : Sí, queda anotado: el viernes, 150 euros. Si ese día surge algún problema, no dude en
+            ponerse en contacto con nosotros. Gracias por su tiempo y que tenga un buen día.
+  Acción  : duplicate
+
+Tú: Mejor 200 euros
+  Agente  : Sin problema, lo corrijo. Queda anotado: el viernes, 200 euros en lugar de 150.
+  Acción  : executed
+  POST    : https://api.ringr.debt/v1/commitment
+  Body    : {"commitment_date": "2026-11-20", "committed_amount": 200.0}
+```
+
+"El viernes" se resolvió a una fecha concreta (la conversación fue el viernes 13 de noviembre de
+2026), el compromiso se registró en cuanto hubo fecha e importe, no se duplicó cuando el cliente
+volvió a preguntar y la corrección de importe se registró como un envío nuevo.
+
 ---
 
 ## 2. Cómo funciona un turno
