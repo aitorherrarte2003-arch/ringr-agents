@@ -1,0 +1,117 @@
+{
+  "reference_date": "2026-11-10",
+  "cases": [
+    {
+      "name": "fecha e importe directos",
+      "conversation": [
+        ["user", "Hola, sí, soy yo."],
+        ["assistant", "Le llamo por un recibo pendiente de 300 €. ¿Cuándo podría pagarlo?"],
+        ["user", "Puedo pagar 150 euros el 20 de noviembre."],
+        ["assistant", "Perfecto, anoto 150 € para el 20 de noviembre."]
+      ],
+      "expected": {"commitment_date": "2026-11-20", "committed_amount": 150}
+    },
+    {
+      "name": "fecha relativa: este viernes",
+      "conversation": [
+        ["user", "Dígame."],
+        ["assistant", "Le llamo por un recibo pendiente de 300 €. ¿Cuándo podría pagarlo?"],
+        ["user", "Este viernes le pago los 300."],
+        ["assistant", "Muy bien, 300 € este viernes."]
+      ],
+      "expected": {"commitment_date": "2026-11-13", "committed_amount": 300}
+    },
+    {
+      "name": "fecha relativa: dentro de una semana",
+      "conversation": [
+        ["user", "Buenas."],
+        ["assistant", "Le llamo por un recibo pendiente. ¿Cuándo podría pagarlo?"],
+        ["user", "Dentro de una semana pago 120."],
+        ["assistant", "De acuerdo, 120 € dentro de una semana."]
+      ],
+      "expected": {"commitment_date": "2026-11-17", "committed_amount": 120}
+    },
+    {
+      "name": "solo fecha, sin importe",
+      "conversation": [
+        ["user", "Hola."],
+        ["assistant", "Le llamo por un recibo pendiente. ¿Cuándo podría pagarlo?"],
+        ["user", "Le pagaré el día 30, pero aún no sé cuánto."],
+        ["assistant", "Entendido. ¿Qué importe cree que podría abonar ese día?"]
+      ],
+      "expected": {"commitment_date": "2026-11-30", "committed_amount": null}
+    },
+    {
+      "name": "solo importe, sin fecha",
+      "conversation": [
+        ["user", "Sí, dígame."],
+        ["assistant", "Le llamo por un recibo pendiente de 200 €. ¿Cuándo podría pagarlo?"],
+        ["user", "Puedo dar 80 euros, pero la fecha todavía no se la puedo decir."],
+        ["assistant", "De acuerdo. ¿Qué día le vendría bien hacer ese pago?"]
+      ],
+      "expected": {"commitment_date": null, "committed_amount": 80}
+    },
+    {
+      "name": "sin compromiso",
+      "conversation": [
+        ["user", "¿Quién es?"],
+        ["assistant", "Le llamo de Ringr por un recibo pendiente. ¿Cuándo podría pagarlo?"],
+        ["user", "Ahora mismo no puedo pagar nada, llámeme otro día."],
+        ["assistant", "Entendido, le volveremos a llamar."]
+      ],
+      "expected": {"commitment_date": null, "committed_amount": null}
+    },
+    {
+      "name": "cambio de opinión: vale el último acuerdo",
+      "conversation": [
+        ["user", "Hola."],
+        ["assistant", "Le llamo por un recibo pendiente de 300 €. ¿Cuándo podría pagarlo?"],
+        ["user", "Le pago 100 el viernes."],
+        ["assistant", "Perfecto, 100 € el viernes."],
+        ["user", "Espere, mejor 150 el lunes 16, que cobro antes."],
+        ["assistant", "Sin problema: 150 € el lunes 16 de noviembre."]
+      ],
+      "expected": {"commitment_date": "2026-11-16", "committed_amount": 150}
+    },
+    {
+      "name": "importe con decimales",
+      "conversation": [
+        ["user", "Sí."],
+        ["assistant", "Le llamo por un recibo pendiente. ¿Cuándo podría pagarlo?"],
+        ["user", "Le pago 75,50 € el 1 de diciembre."],
+        ["assistant", "Anotado: 75,50 € el 1 de diciembre."]
+      ],
+      "expected": {"commitment_date": "2026-12-01", "committed_amount": 75.5}
+    },
+    {
+      "name": "importe en letras",
+      "conversation": [
+        ["user", "Hola."],
+        ["assistant", "Le llamo por un recibo pendiente. ¿Cuándo podría pagarlo?"],
+        ["user", "Le pago doscientos cincuenta euros el día 27."],
+        ["assistant", "Perfecto, 250 € el 27 de noviembre."]
+      ],
+      "expected": {"commitment_date": "2026-11-27", "committed_amount": 250}
+    },
+    {
+      "name": "el agente propone y el cliente acepta",
+      "conversation": [
+        ["user", "Dígame."],
+        ["assistant", "Le llamo por un recibo pendiente. ¿Le vendría bien pagar 200 € el día 25?"],
+        ["user", "Sí, perfecto, el 25 los pago."],
+        ["assistant", "Genial, queda anotado."]
+      ],
+      "expected": {"commitment_date": "2026-11-25", "committed_amount": 200}
+    },
+    {
+      "name": "el agente propone y el cliente rechaza",
+      "conversation": [
+        ["user", "Sí."],
+        ["assistant", "Le llamo por un recibo pendiente. ¿Podría pagar los 300 € mañana?"],
+        ["user", "No, mañana imposible, no tengo dinero."],
+        ["assistant", "Entiendo. ¿Habría otra fecha que le viniera mejor?"]
+      ],
+      "expected": {"commitment_date": null, "committed_amount": null}
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ringr-agents"
+version = "0.1.0"
+description = "Agentes conversacionales con reglas de negocio e integraciones HTTP simuladas."
+readme = "README.md"
+requires-python = ">=3.12"
+# El núcleo no tiene dependencias externas: solo biblioteca estándar.
+dependencies = []
+
+[project.optional-dependencies]
+# Extras opcionales: el núcleo funciona sin ellos.
+llm = ["anthropic>=2.8"]   # agentes con Claude real (chat y eval)
+http = ["httpx>=0.28"]     # cliente HTTP real con reintentos
+dev = [
+    "ringr-agents[llm,http]",
+    "pytest>=8",
+    "pytest-cov>=5",
+    "mypy>=1.13",
+    "ruff>=0.8",
+    "httpx2>=2",  # los tests lo usan para simular errores del SDK de Anthropic
+]
+
+[project.scripts]
+ringr-agents = "ringr_agents.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+
+[tool.coverage.run]
+source = ["ringr_agents"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 95
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",  # estilo pycodestyle
+    "F",       # pyflakes: errores reales (imports sin usar, nombres indefinidos...)
+    "I",       # orden de imports
+    "B",       # bugbear: patrones propensos a bugs
+    "UP",      # sintaxis moderna de Python
+    "SIM",     # simplificaciones
+    "N",       # convenciones de nombres
+    "PT",      # buenas prácticas de pytest
+    "RUF",     # reglas propias de ruff
+]

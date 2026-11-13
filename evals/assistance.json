@@ -1,0 +1,75 @@
+{
+  "reference_date": "2026-11-10",
+  "cases": [
+    {
+      "name": "saludo, sin solicitud",
+      "conversation": [
+        ["user", "Hola, buenas."],
+        ["assistant", "¡Hola! ¿En qué puedo ayudarle?"]
+      ],
+      "expected": {"request": null}
+    },
+    {
+      "name": "duda que resuelve el agente",
+      "conversation": [
+        ["user", "¿Qué horario tiene atención al cliente?"],
+        ["assistant", "Atendemos de lunes a viernes de 9:00 a 18:00. ¿Algo más?"],
+        ["user", "No, era eso, gracias."],
+        ["assistant", "A usted. ¡Que tenga un buen día!"]
+      ],
+      "expected": {"request": null}
+    },
+    {
+      "name": "pregunta de precio resuelta",
+      "conversation": [
+        ["user", "¿Cuánto cuesta la tarifa de fibra de 600 megas?"],
+        ["assistant", "La fibra de 600 Mb cuesta 29,90 € al mes."],
+        ["user", "Vale, gracias."],
+        ["assistant", "A usted."]
+      ],
+      "expected": {"request": null}
+    },
+    {
+      "name": "cambio de tarifa",
+      "conversation": [
+        ["user", "Quiero cambiarme a la fibra de 1 Gb."],
+        ["assistant", "Perfecto, registro su solicitud para que un compañero haga el cambio."]
+      ],
+      "expected": {"request": "*"}
+    },
+    {
+      "name": "baja de una línea",
+      "conversation": [
+        ["user", "Quiero dar de baja la línea móvil de mi hijo."],
+        ["assistant", "Entendido, paso su solicitud de baja a un compañero."]
+      ],
+      "expected": {"request": "*"}
+    },
+    {
+      "name": "reclamación de factura",
+      "conversation": [
+        ["user", "Me habéis cobrado dos veces la factura de octubre y quiero reclamar."],
+        ["assistant", "Lo siento mucho. Registro la reclamación para que la revisen."]
+      ],
+      "expected": {"request": "*"}
+    },
+    {
+      "name": "incidencia técnica",
+      "conversation": [
+        ["user", "No tengo internet desde ayer por la tarde."],
+        ["assistant", "Vaya, lo siento. Abro una incidencia para que un técnico lo revise."]
+      ],
+      "expected": {"request": "*"}
+    },
+    {
+      "name": "primero pregunta y luego pide",
+      "conversation": [
+        ["user", "¿Tenéis fibra en Alcalá de Henares?"],
+        ["assistant", "Sí, tenemos cobertura en Alcalá de Henares."],
+        ["user", "Pues quiero contratarla."],
+        ["assistant", "Genial, registro su solicitud de alta y le llamará un compañero."]
+      ],
+      "expected": {"request": "*"}
+    }
+  ]
+}
